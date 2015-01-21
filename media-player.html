@@ -1,0 +1,16 @@
+<head>
+  <title>media-player</title>
+</head>
+
+<body>
+  <h1>Welcome to Meteor!</h1>
+
+  {{> hello}}
+</body>
+
+<template name="hello">
+ 
+  {{#each files.[0].files}}
+  <div>{{this}}</div>
+  {{/each}}
+</template>

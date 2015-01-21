@@ -1,0 +1,1 @@
+chokidar = Npm.require('chokidar');
