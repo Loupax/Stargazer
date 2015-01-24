@@ -19,7 +19,9 @@ Router.route('/media/:full_path', {where: 'server'}).get(function(){
   var file = this.params.full_path;
   // Do not allow sending of no media files
   if(!isMediaFile(file)){
-    this.response.end(403);
+    this.response.writeHead(403, {'content-Type':'text/plain'});
+    this.response.end('You shouldn\'t request a non-media file... Now I know where you live punk');
+    return;
   }
   var fs = Npm.require('fs');
   var stat = fs.statSync(file);
