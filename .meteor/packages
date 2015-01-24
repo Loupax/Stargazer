@@ -7,4 +7,8 @@
 meteor-platform
 autopublish
 insecure
-chokidar
+iron:router
+jquery
+loupax:chokidar
+urigo:angular
+loupax:ngmaterial

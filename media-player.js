@@ -1,19 +1,66 @@
+// Supported audio formats
+var audioFormats = ['wav', 'mp3', 'ogg'];
+  // Supported video formats
+var videoFormats = ['3gp', '3gpp', 'avi', 'flv', 'mov', 'mpeg', 'mpeg4', 'mp4', 'webm', 'wmv'];
+// An object containing the supposedly mime type of each extension (there are libraries for that)
+// but we do not need so much stuff yet
+var mimeTypes = {mp3: 'audio/mpeg', mpeg:'video/mpeg', mp4: 'video/mp4', wav: 'audio/wav', ogg:'audio/ogg', flv: 'video/flv'};
+var mediaFormats = audioFormats.concat(videoFormats);
+
+// The username is used as a key in the database
+var username = 'loupax';
+// OMG! You can see my media files!
+var mediaPaths = ['/Users/loupax/Movies', '/Users/loupax/Pictures', '/Users/loupax/Music'];
+
+
+Router.route('/','mediaPlayer');
+Router.route('/media/:full_path', {where: 'server'}).get(function(){
+  
+  var file = this.params.full_path;
+  // Do not allow sending of no media files
+  if(!isMediaFile(file)){
+    this.response.end(403);
+  }
+  var fs = Npm.require('fs');
+  var stat = fs.statSync(file);
+  
+  this.response.writeHead(200, {
+        'Content-Type': mimeTypes[file.split('.').toLowerCase] || 'text/html',
+        'Content-Length': stat.size
+  });
+
+  var readStream = fs.createReadStream(file);
+  readStream.pipe(this.response);
+});
+
+
+var isMediaFile = function isMediaFile(path){
+  return mediaFormats.indexOf(path.split('.').pop().toLowerCase()) > -1;
+};
+
 var FileCollection = new Meteor.Collection('FileCollection');
 if (Meteor.isClient) {
-  Template.hello.helpers({
-    files: function(){
-      var files = FileCollection.find({'username': 'loupax'}).fetch();
-      if(files.files){files.files.sort(function(a,b){ return a.localeCompare(b);});}
-      return files;
+  angular.module('stargazer',['angular-meteor','ngMaterial']).
+  config(function($mdThemingProvider) {
+  
+  }).
+  controller('MediaPlayerController', ['$scope', '$meteorCollection', function($scope, $meteorCollection){
+    $scope.files = $meteorCollection(function(){return FileCollection.find({'username':username})});
+    $scope.url;
+    $scope.play = function(file){
+      $scope.url = '/media/'+encodeURIComponent(file);
+    }
+  }]).filter('filename', function(){
+    return function(input){
+      return input.split('/').pop();
     }
   });
 }
 
-if (Meteor.isServer) {
-  Meteor.startup(function () {
-    var watcher = chokidar.watch('/Users/loupax/media-player',{ignored: /^\./, persistent: true});
+if(Meteor.isServer){
+Meteor.startup(function () {
+    var watcher = chokidar.watch(mediaPaths,{ignored: [/[\/\\]\./, function(a){ return !isMediaFile(a);}], persistent: true});
     var fs = Npm.require('fs');
-    var username = process.env.USER;
 
     var fileSystem = [];
 
@@ -26,14 +73,19 @@ if (Meteor.isServer) {
     };
 
     var fileAdded   = function fileAdded(path){
-        fileSystem.push(path);
-        saveFileSystem();
+        if(isMediaFile(path)){
+          fileSystem.push(path);
+          saveFileSystem();
+        }
     };
 
     var fileChanged = function fileChanged(path){};
     var fileRemoved = function fileRemoved(path){ 
-      fileSystem.splice(fileSystem.indexOf(path), 1);
-      saveFileSystem();
+      var index = fileSystem.indexOf(path);
+      if(index > -1){
+        fileSystem.splice(index, 1);
+        saveFileSystem();
+      }
     };
     var fileWatchError = function fileWatchError(path){};
     

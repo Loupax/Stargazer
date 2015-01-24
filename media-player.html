@@ -1,16 +1,11 @@
 <head>
-  <title>media-player</title>
+  <title>Stargazer</title>
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
-
-  {{> hello}}
+  <section ng-app="stargazer" ng-include="'templates/media-player.tpl'"></section>	
 </body>
 
-<template name="hello">
- 
-  {{#each files.[0].files}}
-  <div>{{this}}</div>
-  {{/each}}
+<template name="mediaPlayer">
+	<!-- empty template so that the iron router won't complain... We will do our routing using angular. Maybe -->
 </template>

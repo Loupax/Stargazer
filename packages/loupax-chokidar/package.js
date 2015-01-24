@@ -1,4 +1,6 @@
 Package.describe({
+  name: 'loupax:chokidar',
+  version: '0.12.6',
   summary: "A chokidar wrapper for Meteor"
 });
 

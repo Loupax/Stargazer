@@ -1,1 +1,22 @@
 /* CSS declarations go here */
+.media-player{
+	height: calc(100vh - 2em);
+}
+.media-list{
+	height: inherit;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.media-list-item .md-button{
+	text-align: left;
+	text-overflow: ellipsis;
+	display:block;
+	width: 100%;
+	text-transform: none;
+}
+
+video{
+	width:100%;
+	height:auto;
+}
