@@ -46,36 +46,24 @@ if (Meteor.isClient) {
   config(function($mdThemingProvider) {
   
   }).
-  controller('MediaPlayerController', ['$scope', '$meteorCollection', function($scope, $meteorCollection){
+  controller('MediaPlayerController', ['$scope', '$meteorCollection','$timeout', function($scope, $meteorCollection, $timeout){
     $scope.files = $meteorCollection(function(){return FileCollection.find({'username':username})});
     $scope.url;
     $scope.playerMode = 'audio';
+    $scope.isClosed = true;
+    $scope.focused = 0;
     $scope.play = function(file){
       $scope.url = '/media/'+encodeURIComponent(file);
       $scope.playerMode = (audioFormats.indexOf(file) > -1)?'audio':'video';
-    }
-    $scope.closeMenu = function(){
+    };
+    $scope.closeMenu = function($event){
+      $event.preventDefault();
+      $event.stopPropagation();
       $scope.isClosed = true;
-    }
-    $scope.$watch('searchText', function(){
-      $scope.isClosed = false;
-    });
+    };
   }]).filter('filename', function(){
     return function(input){
       return input.split('/').pop();
-    }
-  }).filter('filenameFilter', function(){
-    return function(input){
-      console.log(arguments);
-      return input;
-    };
-  }).directive('gotFocus', function(){
-    return {
-      link: function(scope, element){
-        element.on('focus',function(){
-          alert('Got focus!');
-        });
-      }
     }
   });
 }
