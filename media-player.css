@@ -1,12 +1,15 @@
 /* CSS declarations go here */
 .media-player{
-	height: calc(100vh - 2em);
+	margin: 2em;
 }
-.media-list{
-	height: inherit;
-	overflow-y: auto;
-	overflow-x: hidden;
+
+.search-bar{
+	padding-bottom: 0;
 }
+.search-bar input{
+	line-height:2em;
+}
+
 
 .media-list-item .md-button{
 	text-align: left;
@@ -19,4 +22,33 @@
 video{
 	width:100%;
 	height:auto;
+}
+
+md-item{
+	line-height: 3em;
+}
+md-item:focus *{
+	background: #ddd;
+}
+
+.slide-down-if {
+  height:12em;
+  overflow-x: hidden;
+  overflow-y: auto; 
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.slide-down-if.ng-enter, .slide-down-if.ng-leave {
+  -webkit-transition:height cubic-bezier(0.250, 0.460, 0.450, 0.940) 110ms;
+  transition:height cubic-bezier(0.250, 0.460, 0.450, 0.940) 110ms;
+}
+
+.slide-down-if.ng-enter,
+.slide-down-if.ng-leave.ng-leave-active {
+  height:0;
+}
+
+.slide-down-if.ng-leave,
+.slide-down-if.ng-enter.ng-enter-active {
+  height:12em;
 }
