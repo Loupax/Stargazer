@@ -6,6 +6,19 @@
 .search-bar{
 	padding-bottom: 0;
 }
+
+.md-tile-left{
+	float: left;
+}
+
+.fa.search-bar-icon{
+	position: absolute;
+	margin:auto;
+	top: 0;
+	bottom: 0;
+	right: 0.2em;
+	line-height: 2em;
+}
 md-toolbar{
 	box-shadow: 0px 2px 2px -2px rgba(0, 0, 0, 0.52);
 }
@@ -24,7 +37,11 @@ md-toolbar{
 	width: 100%;
 	text-transform: none;
 }
-
+.search-result-playlist-button{
+	border-radius: 3px;
+	border: solid 1px #ddd;
+	background: transparent;
+}
 video{
 	width:100%;
 	height:auto;
@@ -34,7 +51,7 @@ md-item{
 	line-height: 3em;
 }
 md-item:focus *{
-	background: #ddd;
+	background: #eee;
 }
 
 .slide-down-if {

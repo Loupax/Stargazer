@@ -43,25 +43,85 @@ var isMediaFile = function isMediaFile(path){
 var FileCollection = new Meteor.Collection('FileCollection');
 if (Meteor.isClient) {
   angular.module('stargazer',['angular-meteor','ngMaterial']).
-  config(function($mdThemingProvider) {
-  
-  }).
   controller('MediaPlayerController', ['$scope', '$meteorCollection','$timeout', function($scope, $meteorCollection, $timeout){
     $scope.files = $meteorCollection(function(){return FileCollection.find({'username':username})});
     $scope.url;
+    $scope.file;
     $scope.playerMode = 'audio';
     $scope.isClosed = true;
     $scope.focused = 0;
+
+    $scope.playlist = [];
+    
+    $scope.startPlaying = function(file){
+      // If are not playing a playlist, start playing the file right away
+      if($scope.playlist.length === 0){
+        $scope.play(file);
+        return;
+      }
+
+      var fileIndex = $scope.playlist.indexOf(file);
+      // If the file already exists, move it at the top of the playlist
+      if(fileIndex > -1){
+        $scope.playlist.unshift($scope.playlist.splice(fileIndex, 1)[0]);
+        $scope.play(file);
+        return;
+      }
+
+      $scope.playlist.unshift(file);
+      $scope.play(file);
+
+    };
+
     $scope.play = function(file){
-      $scope.url = '/media/'+encodeURIComponent(file);
+      $scope.url  = '/media/'+encodeURIComponent(file);
+      $scope.file = file;
       $scope.playerMode = (audioFormats.indexOf(file) > -1)?'audio':'video';
     };
+    
     $scope.closeMenu = function($event){
       $event.preventDefault();
       $event.stopPropagation();
       $scope.isClosed = true;
     };
-  }]).filter('filename', function(){
+
+    $scope.isInPlaylist  = function(file){
+      return $scope.playlist.indexOf(file) > -1;
+    };
+
+    $scope.toggleInPlaylist = function($event, file){
+      $event.stopPropagation();
+      $event.preventDefault();
+
+      if($scope.playlist.indexOf(file) === -1){
+        $scope.playlist.push(file);
+      }else{
+        $scope.playlist.splice($scope.playlist.indexOf(file), 1);
+      }
+    };
+  }])
+  .directive('video', [function(){
+    return {
+      restrict: 'E',
+      controller:'MediaPlayerController',
+      link: function link(scope, element, attrs, controller){
+        element.get(0).onended = function(){
+          // If there is a playlist, play the next media
+          if(scope.playlist.length > 0){
+            var index = scope.playlist.indexOf(scope.file);
+            if(index === scope.playlist.length - 1){
+              // The playlist is done playing. Nothing to do
+              return;
+            }else{
+              // Play the next song on the playlist
+              scope.play(scope.playlist[index+1]);
+            }
+          }
+        }
+      }
+    }
+  }])
+  .filter('filename', function(){
     return function(input){
       return input.split('/').pop();
     }
